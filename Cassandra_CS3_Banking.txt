@@ -1,0 +1,27 @@
+
+#Considerations
+##You have given end points or log files path where data is being produced.
+#Log file contents per line
+#Time Stamp --Page Id –browser –device(IOS/Android)
+#You have different pages on the website which can be search page, promotional page, deal of day page etc. You must use this log and design schema such that it can get daily request counts per day. 
+
+
+CREATE KEYSPACE IF NOT EXISTS bank WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
+USE bank;
+
+
+CREATE TYPE logs (page_id text, browser text, device text, day int, month int, year int, primary key ((page_id, device), (year, month, day)));
+
+1. Number of clicks on deal of the day page with Android device on 11 May 2017
+SELECT count(*) FROM logs WHERE page_id = 'dael of the day' device = 'Android' AND day = 11 and month = 5 and year = 2017;
+
+
+2. Number of clicks on deal of the page with IOS device on 11 May 2017
+SELECT count(*) FROM logs WHERE page_id = 'dael of the day' device = 'IOS' AND day = 11 and month = 5 and year = 2017;
+
+3. Number of clicks on home page with Chrome browser on 11 May 2017
+SELECT count(*) FROM logs WHERE page_id = 'home' browser = 'Chrome' AND day = 11 and month = 5 and year = 2017;
+
+4. Number of clicks on home page of Firefox browser on 11 May 2017
+SELECT count(*) FROM logs WHERE page_id = 'home' browser = 'Firefox' AND day = 11 and month = 5 and year = 2017;
+
