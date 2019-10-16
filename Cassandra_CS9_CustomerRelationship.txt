@@ -1,0 +1,80 @@
+Problem: Customer Relationship Management
+
+1. Create customer table if only if they don't exist already.
+
+   CREATE TABLE IF NOT EXISTS customer (
+       first_name text,
+       last_name text, 
+       title text,
+       PRIMARY KEY (first_name)
+   );
+   select * from customer;
+
+2. Write a couple of rows, but only if same rows don't exist already
+    
+   insert into customer (first_name, last_name, title) values ('Fayiz', 'Usman', 'Manager Buinsess Technology') IF NOT EXISTS;
+   insert into customer (first_name, last_name, title) values ('AAAA', 'BBBB', 'Buinsess Technology Executive') IF NOT EXISTS;
+   insert into customer (first_name, last_name, title) values ('YYYY', 'ZZZZ', 'Junior Executive') IF NOT EXISTS;
+
+3. Add a unique identifier (say id) using a uuid
+
+   ALTER TABLE customer ADD id UUID;
+
+4. Allow Cassandra to auto-assign a uuid
+	Hint: Use SET id = uuid()
+    
+   UPDATE customer SET id = uuid() WHERE first_name = 'Fayiz';
+   UPDATE customer SET id = uuid() WHERE first_name = 'AAAA';
+   UPDATE customer SET id = uuid() WHERE first_name = 'YYYY';
+
+5. Modify the customer table to a set column type to contain email addresses
+
+   ALTER TABLE customer ADD email text;
+
+6. Add an email address and check that it was added successfully
+    
+   UPDATE customer SET email = 'fayiz.usman@gmail.com' WHERE first_name = 'Fayiz' IF EXISTS;
+   UPDATE customer SET email = 'xaa@gmail.com' WHERE first_name = 'AAAA'  IF EXISTS;
+
+7. Modify the customer table to add a list of phone numbers
+    ALTER TABLE customer ADD phone_numbers list<text>;
+
+8. Update the table data to add phone number (inside the list) for an existing customer. 
+   a. Replace an individual item in the list (i.e. a phone number) referenced by its index
+      Hint: Use SET phone_numbers [0]
+
+   update customer set phone_numbers = phone_numbers + ['000966789'] where first_name ='Fayiz';
+   update customer set phone_numbers = phone_numbers + ['00910966789'] where first_name ='Fayiz';
+   update customer set phone_numbers[1] = '00910966789999' where first_name ='Fayiz';
+
+9. Add a map attribute to store information about an existing customer’s logins a timestamp (timeuuid) and a sessionID
+   Example: login_sessions map<timeuuid, int>
+   Hint: Use the now () function to allow Cassandra to set the timestamp
+
+   ALTER TABLE customer ADD login_sessions map<timeuuid, int>;
+   update customer set login_sessions = login_sessions + {now() : 1} where first_name ='Fayiz';
+
+10. Create a User Defined Type (UDT) for address information
+    Example: address (street text, city text, state text, zip_code int)
+
+    CREATE TYPE address (street text, city text, state text, zip int);
+
+11. Use this UDT in a Map 
+    Example: addresses map<text, address>
+    Hint: Freeze the UDT so we can use it in a map i.e. frozen<address>
+    
+    ALTER TABLE customer ADD addresses map<text, FROZEN<address>>;
+    update customer set addresses = addresses + { 'addr1' : {street:'Chavakkad', city:'Trichur', state: 'Kerala', zip:680512}} where first_name ='Fayiz';
+    update customer set addresses = addresses + { 'addr2' : {street:'south street', city:'NYC', state: 'NY', zip:200145}} where first_name ='Fayiz';
+
+12. Create a secondary index for the last_name column.
+    
+    CREATE INDEX indx_last_name ON customer(last_name);
+    select * from customer where last_name = 'Usman';
+ 
+13. Create a SSTable Attached Secondary Index (SASI)
+    Hint: Use org.apache.cassandra.index.sasi.SASIIndex class
+
+    CREATE CUSTOM INDEX indx_last_name ON customer (last_name) 
+    USING 'org.apache.cassandra.index.sasi.SASIIndex' 
+    WITH OPTIONS = {'mode': 'CONTAINS', 'analyzer_class': 'org.apache.cassandra.index.sasi.analyzer.StandardAnalyzer', 'case_sensitive': 'false'};

@@ -1,0 +1,23 @@
+Problem: Cassandra Cluster Subrange Repair
+
+1. Create a Keyspace a nd create a table in it. Insert data in to the table.
+
+        CREATE KEYSPACE IF NOT EXISTS hotels WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
+
+	USE hotels;
+
+	CREATE TABLE available_rooms_by_hotel_date (
+	    hotel_id text,
+	    date text, 
+	    room_number smallint,
+	    is_available boolean,
+	    PRIMARY KEY ((hotel_id), room_number, date)
+	);
+
+	COPY available_rooms_by_hotel_date (hotel_id, date, room_number, is_available) FROM '/home/edureka/available_rooms.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+
+2. Develop a Java/Python code to obtain tokens for a range for the entire keyspace programmatically.
+   Hint: You can use DataStax Cassandra drivers while developing client code. 
+
+3. Use the nodetool command to repair for one range (returned by above step) at a time. 
+   bin/nodetool -h 127.0.0.1 repair
