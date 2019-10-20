@@ -1,0 +1,37 @@
+
+
+Case Study 3
+High Available Cluster for Recommendation engine
+
+Statement:
+We  are  developing  an  online  shopping  portal  recommender  engine  which  analyses customer’s recent purchase or viewing pattern and recommends items to them. 
+As the “customer-generated click data” is of high velocity and volume we need to design a Cassandra  datastore  which  is  highly  available  for  reading and  writing
+and  supports  very fast read operation. As the recommender system doesn’t consider user’s real-time  and most  recent  data  the  Cassandra  datastore  can  be  inconsistent  or  can  be  eventual 
+consistent which doesn’t affect the overall recommendation quality. 
+
+Design and implement a Cassandra Data Cluster with following constraints:
+
+Problem: 
+1. To ensure high availability we create 2 datacentres with replication factor at least 2.
+2. Use an appropriate Snitch protocol to support the multi-data center cluster. 
+	
+   => set endpoint_snitch = SimpleSnitch in cassandra.yaml file as below
+      endpoint_snitch: GossippingPropertyFileSnitch
+
+3. Use an appropriate partitioner to enable faster read operation and uniform data distribution. 
+   => ensure you set the partition as per the business requirement and partition size should not exceed the size of the node
+
+4. Ensure the replication factor can be met even if a number of healthy nodes is lesser than the replication factor. 
+   Hint: Use hinted handoff.
+
+5. Device a mechanism to test that replication factor is eventually met after a dead node is made up again. 
+6. Ensure high level of read and write availability 
+
+7. The use case doesn’t require to deal with most recent data. So, consistency level can be kept low for read and write.
+   => Consistency level can set to 1 in this case
+
+8. Display the cluster status in a command line.
+   Hint: Use nodetool command.
+   
+   => nodetool status
+

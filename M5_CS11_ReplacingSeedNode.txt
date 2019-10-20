@@ -1,0 +1,16 @@
+Problem: Replacing a Seed Node
+
+1. Design and implement a plan and replace a seed node.
+   
+   -> Record the datacenter, address and rack settings of the dead node, we will use this later
+   -> Add the replacement node to the network and record its IP address
+       Join
+   -> On the existing node, gather setting information for the new node from the cassandra.yaml file of dead node:
+       cluster_name
+       endpoint_snitch
+       rpc_address
+       listen_address
+   -> Add the following option to cassandra-env.sh file:
+       JVM_OPTS="$JVM_OPTS -Dcassandra.replace_address = address_of_dead_node
+   -> Now Start the Replacement Node with the following command
+       cassandra -Dcassandra.replace_address = address_of_replacement_node
