@@ -1,0 +1,36 @@
+
+Case Study 1
+Cluster Monitoring Through JConsole/nodetool
+Now you must have got an idea about how to Manage and Monitor a Node in the Cassandra Cluster. 
+Spend some time to figure out below-mentioned use case to know why and how you can leverage Cassandra.
+
+Statement:
+We have a significant increase in the read/write latency for a column family. We 
+investigate the root cause with using JConsole or nodetool command. 
+
+Problem: 
+1. Is there an increase in the time reading the data from table?
+   bin/nodetool cfstats <table-name>
+2. Are all the nodes up?
+   nodetool status
+3. Are there a lot of hints replayed?
+   bin/nodetool tpstats
+4. What is the Garbage Collection statistics? 
+   bin/nodetool gcstats
+5. Is compaction causing additional latencies?
+   nodetool -h 127.0.0.1 compactionstats
+6. Are there a lot of threads flush pending?
+   bin/nodetool cfstats <table-name>
+7. Is there a streaming in progress?
+   nodetool -h 127.0.0.1 netstats
+8. How much memory available, including the size of each generation space on the heap?
+   bin/nodetool cfstats <table-name>
+9. Is there any thread deadlock, what’s the peak number of threads, and current live threads?
+   nodetool tpstats
+10. What is the application uptime? 
+    nodetool -h 127.0.0.1 info
+
+worth reading: https://www.datadoghq.com/blog/how-to-collect-cassandra-metrics/
+
+
+
