@@ -1,0 +1,22 @@
+
+Task : 1. Provide a data model, using CQL create table syntax which will enable the optimized search result for the following query:
+
+CREATE TABLE stock_ticket (
+    symbol text,
+    description text STATIC,
+    exchange text,
+    year int,
+    tick_date text,
+    open double,
+    high double,
+    low double,
+    close double,
+    volume double,
+    PRIMARY KEY ((symbol,exchange, year), tick_date)
+);
+
+A. All the daily close prices and descriptions of the stocks listed in the NASDAQ exchange.
+SELECT tick_date, close, description FROM stock_ticket WHERE exchange = 'NASDAQ';
+
+B. All day close prices and descriptions of the stocks listed in the NASDAQ exchange on November 21, 2017.
+SELECT tick_date, close, description FROM stock_ticket WHERE exchange = 'NASDAQ' AND tick_date = '2017-11-21';

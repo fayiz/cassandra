@@ -1,0 +1,20 @@
+
+#Time series data modelling
+
+CREATE KEYSPACE IF NOT EXISTS location WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
+USE location;
+
+CREATE TYPE address (street text, city text, zip int, phones set<text> );
+create table users (user_id UUID, user_name text, email text, address FROZEN<address>, primary key (user_id));
+
+1. Get all locations of a user in a month
+CREATE TABLE locations_30days (user_name text, timestamp TIMEUUID, location text, primary key (user_name, timestamp)) WITH default_time_to_live = 2678400;
+
+2. Get all locations of a user on a specific day or date range
+CREATE TABLE locations (user_name text, timestamp TIMEUUID, location text, primary key (user_name, timestamp));
+
+3. Get all locations of a user in last 6 hours
+CREATE TABLE locations_6hr (user_name text, location text, timestamp TIMEUUID, primary key (user_name, location)) WITH default_time_to_live = 21600;
+
+4. Get all locations of a user in specific hours
+CREATE TABLE locations_hourly (user_name text, location text, hour int, timestamp TIMEUUID, primary key ((user_name, hour) location));
