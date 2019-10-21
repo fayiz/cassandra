@@ -1,0 +1,276 @@
+CREATE KEYSPACE IF NOT EXISTS playlist WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
+
+USE playlist;
+
+create table track_by_id (track text, artist text, track_id UUID, track_length_in_seconds int, genre text, music_file text, primary key (track_id));
+
+
+create table track_by_artist (track text, artist text, track_id UUID, track_length_in_seconds int, genre text,music_file text, primary key (artist,track));
+
+create table playlist_tracks (username text, playlist_name text, sequence_no int, track_name text, primary key ((username, playlist_name), sequence_no ));
+
+insert into track_by_id (track_id, genre, artist, track, track_length_in_seconds, music_file) values (c8bbc608-07ab-4586-9ba4-bedbd829c66c,'classic pop and rock','Blue Oyster Cult','Mes Dames Sarat',246,'TRFCOOU128F427AEC0');
+insert into track_by_id (track_id, genre, artist, track, track_length_in_seconds, music_file) values (b3805f45-4db8-4362-bf3d-7864cfdaa0c1,'classic pop and rock','Blue Oyster Cult','Screams',189,'TRNJTPB128F427AE9F');
+insert into track_by_id (track_id, genre, artist, track, track_length_in_seconds, music_file) values (9643f0fa-4e27-469d-8095-9a29b5483a0f,'pop','Joan Sebastian','Tu Dilema',181,'TRNFYSH128EF361E6D');
+insert into track_by_id (track_id, genre, artist, track, track_length_in_seconds, music_file) values (588a4c6f-1875-4531-a08c-be4fe510b0ec,'pop','Joan Sebastian','El Postre',152,'TRPAWCO128EF361E6B');
+
+insert into track_by_artist(track_id, genre, artist, track, track_length_in_seconds, music_file) values (c8bbc608-07ab-4586-9ba4-bedbd829c66c,'classic pop and rock','Blue Oyster Cult','Mes Dames Sarat',246,'TRFCOOU128F427AEC0');
+insert into track_by_artist(track_id, genre, artist, track, track_length_in_seconds, music_file) values (b3805f45-4db8-4362-bf3d-7864cfdaa0c1,'classic pop and rock','Blue Oyster Cult','Screams',189,'TRNJTPB128F427AE9F');
+insert into track_by_artist(track_id, genre, artist, track, track_length_in_seconds, music_file) values (9643f0fa-4e27-469d-8095-9a29b5483a0f,'pop','Joan Sebastian','Tu Dilema',181,'TRNFYSH128EF361E6D');
+insert into track_by_artist(track_id, genre, artist, track, track_length_in_seconds, music_file) values (588a4c6f-1875-4531-a08c-be4fe510b0ec,'pop','Joan Sebastian','El Postre',152,'TRPAWCO128EF361E6B');
+
+
+
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyPop',1,'El Postre');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyPop',2,'Manuel Juarez');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyPop',3,'La Carta');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyPop',4,'El Viejo Joven');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyPop',5,'Rumores');
+
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyClassic',1,'Screams');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyClassic',2,'Dance The Night Away');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyClassic',3,'Morning Final');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyClassic',4,'Workshop Of The Telescopes');
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('john','MyClassic',5,'Godzilla');
+
+insert into playlist_tracks(username, playlist_name, sequence_no, track_name) values ('jo:hn','MyClassic',5,'Godzilla');
+
+
+#Counters
+CREATE TABLE page_count (url text, count counter , PRIMARY KEY(url));
+INSERT INTO page_count (url , count) values ('www.flipkart.com', 1);
+update page_count set count = count + 1 where url='www.flipkart.com';
+select * from page_count;
+
+#List
+CREATE TABLE track_artist (track text PRIMARY KEY , artists list<text>);
+INSERT INTO track_artist (track ,artists) VALUES ( '1',['Alex de Grassi','Amy La Vere']);
+INSERT INTO track_artist (track ,artists) VALUES ( '2',['Black Uhuru','Buju Banton']); 
+
+update track_artist set artists = artists + ['Adarsh'] where track = '1';
+update track_artist set artists = ['Adarsh'] + artists where track = '1';
+
+update track_artist set artists[1] = 'Kumar' where track = '1';
+delete artists[1] from track_artist where track = '1';
+#remove all occurrences of Adarsh
+update track_artist set artists = artists - ['Adarsh'] where track = '1';
+ 
+#Set
+create table users (username text primary key, password text, playlist_names set<text>);
+ INSERT INTO users (username , password ,playlist_names) values ('adarsh','pass1',{'rock','classical'});
+ INSERT INTO users (username , password ,playlist_names) values ('john','pass1',{'rock','metal'});
+ update users set playlist_names = playlist_names + {'folk'} where username ='adarsh';
+ update users set playlist_names = playlist_names - {'rock'} where username ='adarsh';
+ 
+#Map
+CREATE TABLE playlists (name text PRIMARY KEY , tracks Map<int,text>);
+
+INSERT INTO playlists (name, tracks) VALUES ( 'folk', {1:'Lonely Hours', 2:'Night Traveling Raindrops', 3:'Deck The Halls'});
+INSERT INTO playlists (name, tracks) VALUES ( 'metal', {1:'The Great Fall', 2:'Consumed By The Dead', 3:'Apocalyptic Feasting', 4:'Weight Of The World (LP Version)'});
+
+update playlists set tracks = tracks + {5:'Happy Day'} where name = 'metal';
+
+update playlists set tracks[1]='The Great Guy' where name = 'metal';
+
+delete tracks[5] from playlists where name = 'metal';
+
+#UUID and TIMEUUID
+CREATE TABLE track_ratings_by_user (user UUID, activity TIMEUUID, rating INT, album_title VARCHAR, track_title VARCHAR, PRIMARY KEY (user, activity)) WITH CLUSTERING ORDER BY (activity DESC);
+
+insert into track_ratings_by_user (user, activity, rating, album_title, track_title) values (uuid(),now(),3,'Blue Oyster Cult','Mes Dames Sarat');
+select album_title, track_title, rating, dateOf(activity) from track_ratings_by_user;
+
+#touple
+CREATE TABLE collection (key text PRIMARY KEY, value tuple<int, text, float>);
+INSERT INTO collection (key, value) VALUES('adarsh', (3, 'bar', 2.1));
+
+CREATE TABLE nested (key int PRIMARY KEY, t_value tuple <int, tuple<text, double>>);
+
+INSERT INTO nested (key, t_value) VALUES (0, (3, ('foo', 3.4)));
+
+#UDT
+CREATE TYPE address (street text, city text, zip int, phones set<text> );
+CREATE TABLE emp2 (id int PRIMARY KEY, name text, address FROZEN<address>);
+
+INSERT INTO emp2 (id, name, address) VALUES (1, 'Adarsh Kumar', {street:'south street', city:'NY', zip:200145, phones:{'+91 9873571442', '+91 8800311227'}});
+ 
+ 
+## Time To Live ##
+CREATE TABLE event (id int PRIMARY KEY , name text, day int, month int, year int, time text);
+INSERT INTO event (id, name, day, month , year , time ) VALUES ( 1,'Conf',22,12, 2017,'9:30') USING TTL 120;
+INSERT INTO event (id, name, day, month , year , time ) VALUES ( 2,'Conf',22,12, 2017,'9:30') USING TTL 100;
+INSERT INTO event (id,  month ) VALUES ( 1,12) USING TTL 120;
+
+
+CREATE TABLE event (id int PRIMARY KEY ,name text, day int, month int, year int, time text) WITH default_time_to_live = 120;
+
+
+## STATIC Columns ##
+
+CREATE TABLE emp_mgr_mapping (id int, dept text, name text, mgr text STATIC, PRIMARY KEY (dept,id));
+
+INSERT INTO emp_mgr_mapping (id, dept, name, mgr) VALUES (1, 'IT', 'Adarsh Kumar', 'Pankaj Narula');
+INSERT INTO emp_mgr_mapping (id, dept, name, mgr) VALUES (2, 'IT', 'Anny Jhonson', 'Pradeep Malik');
+
+## MATERIALIZED VIEW ##
+create table emp1 (id int PRIMARY KEY , name text, dept text, mgr text);
+
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (1, 'ADARSH KUMAR', 'IT', 'PANKAJ NARULA');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (2, 'AMIT CHOWDHERY', 'IT', 'PANKAJ NARULA');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (3, 'ADOM Y', 'FINANCE', 'NISHANT GOYAL');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (4, 'ANNY JHONSONS', 'SALES', 'KARAN SINGH RAGHUVANSHI');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (5, 'PETER JOHN', 'HR', 'ADARSH KUMAR');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (6, 'AARAV CHANDRA', 'HR', 'PADMAWATI');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (7, 'MOHD ZUBER', 'SUPPORT', 'ADARSH KUMAR');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (8, 'PARWATI CHANDRA', 'SUPPORT', 'ADARSH KUMAR');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (9, 'SAURABH VERMA', 'FINANCE', 'KARAN SINGH RAGHUVANSHI');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (10, 'BILL WILSON', 'IT', 'SANDESH DIXIT');
+INSERT INTO emp1 (id, name, dept, mgr) VALUES (11, 'RAM KUMAR', 'IT', 'SANDESH DIXIT');
+
+CREATE INDEX emp1_mgr ON emp1(mgr);
+
+CREATE MATERIALIZED VIEW emp_dept AS SELECT * FROM emp1 WHERE dept is not null PRIMARY KEY ( dept, id);
+
+CREATE MATERIALIZED VIEW emp_mgr AS SELECT * FROM emp1 WHERE mgr is not null PRIMARY KEY ( mgr, id);
+
+#blob
+CREATE TABLE profile ( id varchar PRIMARY KEY, resume blob);
+INSERT INTO profile (id, resume) VALUES ('123', textAsBlob('Prakash having 15 years of experience in Big Data & Analytics'));
+select id, blobAsText(resume) as Resume from profile;
+
+
+nodetool snapshot -t 18Feb2018_1 -kt test.emp
+
+#Cassandra-stress
+# Insert (write) 100000 rows
+cassandra-stress write n=100000 -rate threads=50
+
+# Read One hundred thousand rows.
+cassandra-stress read n=100000 -rate threads=50
+
+#Read rows for a duration of 1 minute.
+cassandra-stress read duration=1m -rate threads=50
+
+# Read 200,000 rows without a warmup of 50,000 rows first.
+cassandra-stress read n=200000 no-warmup -rate threads=50
+
+
+
+#Auth
+authenticator: PasswordAuthenticator
+
+cqlsh -u cassandra -p cassandra
+
+ALTER KEYSPACE "system_auth" WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 2};
+
+nodetool repair system_auth
+
+
+CREATE ROLE admin WITH PASSWORD = 'admin' AND SUPERUSER = true AND LOGIN = true;
+	
+	ALTER ROLE cassandra WITH PASSWORD='SomeNonsenseThatNoOneWillThinkOf' AND SUPERUSER=false;
+
+
+ IP Address1:  54.202.144.60 
+user  name: ec2-user
+ 
+IP Address2: 34.213.66.239
+user  name: ec2-user
+
+IP Address3:  34.213.66.239 
+user  name: ec2-user
+
+"/opt/apache-cassandra"
+ 
+SSL:
+1). Create a root CA certificate and key
+openssl req -config E://ca.conf -new -x509 -nodes -subj /CN=rootCa/OU=TestCluster/O=YourCompany/C=US/ -keyout e://rootCa.key -out e://rootCa.crt -days 365
+
+2). Verify the rootCa certificate
+openssl x509 -in e://rootCa.crt -text -noout
+
+3). Generate public/private key pair and keystore for each node
+keytool -genkeypair -keyalg RSA -alias nodeA -keystore e://nodeA.jks -storepass myKeyPass -keypass myKeyPass -validity 365 -keysize 2048 -dname "CN=nodeA, OU=TestCluster, O=YourCompany, C=IN"
+
+4). Check keystore
+keytool -list -keystore e://nodeA.jks -storepass myKeyPass
+
+5). Export certificate signing request (CSR) for each node
+keytool -certreq -keystore e://nodeA.jks -alias nodeA -file e://nodeA.csr -keypass myKeyPass -storepass myKeyPass -dname "CN=nodeA, OU=TestCluster, O=YourCompany, C=US"
+
+6). Sign node certificate with rootCa for each node
+openssl x509 -req  -CA e://rootCa.crt -CAkey e://rootCa.key -in e://nodeA.csr -out e://nodeA.crt_signed -days 365 -CAcreateserial -passin pass:myPass
+
+7). Verify the signed certificate for each node
+openssl verify -CAfile e://rootCa.crt e://nodeA.crt_signed
+
+8). Import rootCa certificate to each node keystore
+keytool -importcert -keystore e://nodeA.jks -alias rootCA  -file e://rootCa.crt -noprompt  -keypass myKeyPass -storepass myKeyPass 
+
+9). Import node's signed certificate into node keystore for each node
+keytool -importcert -keystore e://nodeA.jks -alias nodeA -file e://nodeA.crt_signed -noprompt -keypass myKeyPass -storepass myKeyPass 
+
+10). Create a server truststore
+keytool -importcert -keystore e://generic-server-truststore.jks -alias rootCa  -file e://rootCa.crt -noprompt -keypass myPass -storepass truststorePass 
+
+11). The resulting truststore file can be inspected using the keytool -list command:
+keytool -list -keystore e://generic-server-truststore.jks -storepass truststorePass
+
+12). Copy the truststore file to each node
+
+
+
+keytool -exportcert -alias nodeA -keypass myPass -keystore e://nodeA.jks -storepass myKeyPass -rfc -file e://cassandra_cert.pem
+
+
+1). sudo add-apt-repository ppa:webupd8team/java -y
+2). sudo apt-get update
+3). sudo apt-get install oracle-java8-installer
+4). sudo apt-get install oracle-java8-set-default
+5). sudo add-apt-repository ppa:deadsnakes/ppa
+6). sudo apt-get update
+7). sudo apt-get install python2.7
+8). sudo apt-get install python-pip
+9). python --version
+10). pip install pyreadline
+11). echo "JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")" | sudo tee -a /etc/profile
+12). source /etc/profile
+13). echo $JAVA_HOME
+14). echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+15). curl https://www.apache.org/dist/cassandra/KEYS | sudo apt-key add -
+16). sudo apt-get update
+17). sudo apt-get install cassandra
+18). sudo service cassandra start 
+
+ 
+ 
+
+ 
+Cassandra On RHEL:
+ 
+1). Installing Java
+	rpm -Uvh jdk-8u111-linux-x64.rpm
+	
+2). Install and Configure Cassandra
+	tar -zxvf apache-cassandra-3.9-bin.tar.gz
+	ln -s /opt/apache-cassandra-3.9 /opt/apache-cassandra
+	chown cassandra:cassandra -R /opt/apache-cassandra
+	chown cassandra:cassandra -R /opt/apache-cassandra-3.9
+	
+3). Make necessary directories
+	mkdir /var/lib/cassandra/data
+	mkdir /var/log/cassandra
+	mkdir /var/lib/cassandra/commitlog
+	chown -R cassandra:cassandra /var/lib/cassandra/data
+	chown -R cassandra:cassandra /var/log/cassandra/
+	chown -R cassandra:cassandra /var/lib/cassandra/commitlog
+	
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
