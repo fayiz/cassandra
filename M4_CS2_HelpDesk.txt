@@ -1,0 +1,22 @@
+CREATE TABLE help_desk (
+    CustomerId text,
+    TicketId text, 
+    ActionTime TIMEUUID,
+    Action text,
+    PRIMARY KEY ((CustomerId), TicketId, ActionTime)
+);
+
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST1', 'TKT1', now(), 'Action tkt 1-0');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST1', 'TKT1', now(), 'Action tkt 1-1');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST1', 'TKT1', now(), 'Action tkt 1-2');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST1', 'TKT1', now(), 'Action tkt 1-3');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST2', 'TKT2', now(), 'Action tkt 2-0');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST2', 'TKT2', now(), 'Action tkt 2-1');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST2', 'TKT2', now(), 'Action tkt 2-2');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST4', 'TKT3', now(), 'Action tkt 3-0');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST4', 'TKT3', now(), 'Action tkt 3-1');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST4', 'TKT3', now(), 'Action tkt 3-2');
+INSERT INTO help_desk (CustomerId, TicketId, ActionTime, Action) values ('CUST4', 'TKT3', now(), 'Action tkt 3-3');
+
+select CustomerId, TicketId, ActionTime, dateOf(ActionTime), Action from help_desk;
+select CustomerId, TicketId, ActionTime, dateOf(ActionTime), Action from help_desk where ActionTime > '2019-10-15 09:17:58+0200';
