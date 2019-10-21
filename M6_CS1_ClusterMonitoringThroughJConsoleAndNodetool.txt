@@ -1,6 +1,5 @@
 
-Case Study 1
-Cluster Monitoring Through JConsole/nodetool
+Case Study: Cluster Monitoring Through JConsole/nodetool
 Now you must have got an idea about how to Manage and Monitor a Node in the Cassandra Cluster. 
 Spend some time to figure out below-mentioned use case to know why and how you can leverage Cassandra.
 
