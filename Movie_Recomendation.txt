@@ -1,0 +1,24 @@
+
+##Data Model for Movie Recomendation
+
+CREATE KEYSPACE movies_keyspace WITH replication= {'class' : 'SimpleStrategy', 'replication_factor' : 3};
+
+USE movies_keyspace;
+
+CREATE TABLE movies (
+	title text,
+	also_viewed_title text,
+	count int,
+	PRIMARY KEY (title, count)
+) WITH CLUSTERING ORDER BY (count DESC);
+
+
+##Queries to insert data
+INSERT INTO movies (title, also_viewed_title, count) VALUES ('Titanic', 'Avatar', 2);
+INSERT INTO movies (title, also_viewed_title, count) VALUES ('Titanic', 'Jurassic park', 1);
+
+
+##Queries to fetch data
+select also_viewed_title, count from movies where title = 'Titanic';
+select title, also_viewed_title, count from movies;
+
