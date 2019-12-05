@@ -23,6 +23,4 @@ as the partition key, while date and room_number are clustering columns.
 
 CREATE FUNCTION IF NOT EXISTS is_available (input boolean) CALLED ON NULL INPUT RETURNS int 
 LANGUAGE java AS ' return input == true ? 1 : 0; ';
-
 	select hotel_id, date, room_number, is_available(is_available) from available_rooms_by_hotel_date;
-
